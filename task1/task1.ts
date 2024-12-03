@@ -14,3 +14,43 @@ export default function solution(input: string) {
   //   console.log(`First number: ${match[1]}, Second number: ${match[2]}`);
   // });
 }
+
+export function solutionPt2(input: string) {
+  return R.pipe(
+    Array.from(stringChunks(input)),
+    R.map(solution),
+    R.reduce((acc, current) => acc + current, 0)
+  )
+}
+
+export function dontSubstr(input: string) {
+  return substr(input, `don't()`);
+}
+
+export function doSubstr(input: string) {
+  return substr(input, 'do()');
+}
+
+function substr(input: string, pattern: string) {
+  const index = input.indexOf(pattern);
+  if (index < 0) {
+    return [input, '', true] as const;
+  }
+
+  return [input.substring(0, index), input.substring(index + pattern.length), false] as const;
+}
+
+export function* stringChunks(input: string) {
+  let current = input;
+  while (true) {
+    let [substr, rest, isEnd] = dontSubstr(current);
+    yield substr;
+    if (isEnd) {
+      break;
+    }
+
+    [substr, rest, isEnd] = doSubstr(rest);
+
+    current = rest;
+  }
+}
