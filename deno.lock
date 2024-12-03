@@ -1,0 +1,22 @@
+{
+  "version": "4",
+  "specifiers": {
+    "npm:remeda@^2.17.4": "2.17.4"
+  },
+  "npm": {
+    "remeda@2.17.4": {
+      "integrity": "sha512-pviU2Ag7Qx9mOCAKO4voxDx/scfLzdhp3v85qDO4xxntQsU76uE9sgrAAdK1ATn4zzaOJqCXYMMNRP+O9F4Wiw==",
+      "dependencies": [
+        "type-fest"
+      ]
+    },
+    "type-fest@4.30.0": {
+      "integrity": "sha512-G6zXWS1dLj6eagy6sVhOMQiLtJdxQBHIA9Z6HFUNLOlr6MFOgzV8wvmidtPONfPtEUv0uZsy77XJNzTAfwPDaA=="
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:remeda@^2.17.4"
+    ]
+  }
+}

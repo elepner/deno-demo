@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "remeda": "npm:remeda@^2.17.4"
+  }
+}
