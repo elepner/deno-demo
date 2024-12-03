@@ -2,17 +2,8 @@ import { expect } from "jsr:@std/expect";
 import solution from './task1.ts';
 
 
-Deno.test("should return diffs", () => {
-  debugger;
-  const result = solution([1, 2, 5, 7]);
+Deno.test("should solve sample", () => {
+  const result = solution('xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))');
+  expect(result).toBe(161);
+});
 
-  expect({ result }).toMatchObject({ result: [1, 3, 2] })
-})
-
-
-Deno.test("should return diffs 2", () => {
-  debugger;
-  const result = solution([1, 2, 5, 7]);
-
-  expect({ result }).toMatchObject({ result: [1, 3, 2] })
-})

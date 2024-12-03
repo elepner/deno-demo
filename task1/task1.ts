@@ -1,13 +1,16 @@
 import * as R from 'npm:remeda';
 
-export default function (input: number[]) {
-  const bar = R.pipe(
-    input,
-    R.zip(R.pipe(input, R.drop(1))),
-    R.map(([current, next]) => {
-      return next! - current;
-    }),
-  );
 
-  return bar;
+export default function solution(input: string) {
+  const regex = /mul\((\d+),(\d+)\)/g;
+  const matches = [...input.matchAll(regex)]; // Convert the iterator to an array
+  return R.pipe(
+    matches,
+    R.map((match) => ([Number(match[1]), Number(match[2])] as const)),
+    R.map(([a, b]) => a * b),
+    R.reduce((acc, current) => acc + current, 0)
+  )
+  // matches.forEach(match => {
+  //   console.log(`First number: ${match[1]}, Second number: ${match[2]}`);
+  // });
 }
