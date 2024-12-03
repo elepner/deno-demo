@@ -7,3 +7,8 @@ Deno.test("should solve sample", () => {
   expect(result).toBe(161);
 });
 
+Deno.test("should solve real task", async () => {
+  const content = await Deno.readTextFile('./task1/input.txt');
+  const result = solution(content);
+  console.log(result)
+})
