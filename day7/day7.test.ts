@@ -2,14 +2,17 @@ import { expect } from "jsr:@std/expect";
 import { EOL } from 'node:os';
 
 
-const allOps = ['*', '+'] as const;
+
+const allOps = ['*', '+', '|'] as const;
+const shortOps: Readonly<Op[]> = ['*', '+'];
 type Op = typeof allOps[number]
 const opsMap: { [key in Op]: (a: number, b: number) => number } = {
   '*': (a, b) => a * b,
-  '+': (a, b) => a + b
+  '+': (a, b) => a + b,
+  '|': (a, b) => parseInt(`${a}${b}`)
 }
 
-function evaluate(target: number, currentAggregate: number, rest: number[], ops: Op[]): Op[] | null {
+function evaluate(target: number, currentAggregate: number, rest: number[], ops: Op[], avalableOps: Readonly<Op[]>): Op[] | null {
 
 
   const diff = target - currentAggregate;
@@ -29,9 +32,9 @@ function evaluate(target: number, currentAggregate: number, rest: number[], ops:
     return null;
   }
 
-  for (const op of allOps) {
+  for (const op of avalableOps) {
     const nextAggregate = opsMap[op](currentAggregate, nextNum);
-    const result = evaluate(target, nextAggregate, nextRest, [...ops, op]);
+    const result = evaluate(target, nextAggregate, nextRest, [...ops, op], avalableOps);
     if (result) {
       return result;
     }
@@ -87,9 +90,9 @@ function bruteForce(target: number, vals: number[]) {
   return null;
 }
 
-function checkSeq(target: number, vals: number[]) {
+function checkSeq(target: number, vals: number[], avalableOps: Readonly<Op[]> = shortOps) {
   const [nextNum, ...nextRest] = vals;
-  const res = evaluate(target, nextNum, nextRest, []);
+  const res = evaluate(target, nextNum, nextRest, [], avalableOps);
 
   return res != null;
 }
@@ -102,6 +105,13 @@ function solvePt1(input: string) {
   }, 0);
 }
 
+function solvePt2(input: string) {
+  return parseInput(input).map(([target, seq]) => {
+    return [target, checkSeq(target, seq, allOps)] as const
+  }).filter(([, isOk]) => isOk).reduce((acc, [target]) => {
+    return acc + target
+  }, 0);
+}
 
 function parseInput(input: string) {
   return input.trim().split(EOL).map((str) => {
@@ -148,16 +158,27 @@ const sample = `
 21037: 9 7 18 13
 292: 11 6 16 20
 `;
-Deno.test('shoould solve sample', () => {
+Deno.test('shoould solve sample pt1', () => {
   const result = solvePt1(sample);
   expect(result).toBe(3749);
 });
+
+Deno.test('shoould solve sample pt2', () => {
+  const result = solvePt2(sample);
+  expect(result).toBe(11387);
+});
+
 
 Deno.test('should solve pt1', async () => {
   const content = await Deno.readTextFile('./day7/input.txt');
   const result = solvePt1(content);
   expect(result).toBe(3312271365652);
+});
 
+Deno.test('should solve pt2', async () => {
+  const content = await Deno.readTextFile('./day7/input.txt');
+  const result = solvePt2(content);
+  console.log(result);
 });
 
 Deno.test('check brute force', async () => {
