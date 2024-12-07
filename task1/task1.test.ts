@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import solution, { solutionPt2, stringChunks } from './task1.ts';
+import solution, { solutionPt2 } from './task1.ts';
 
 
 Deno.test("should solve sample", () => {
