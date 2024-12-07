@@ -8,16 +8,20 @@ const opsMap: { [key in Op]: (a: number, b: number) => number } = {
   '*': (a, b) => a * b,
   '+': (a, b) => a + b
 }
+
 function evaluate(target: number, currentAggregate: number, rest: number[], ops: Op[]): Op[] | null {
+
 
   const diff = target - currentAggregate;
 
   if (diff < 0) {
     return null;
   }
-  if (diff === 0) {
-    return rest.length === 0 ? ops : null;
+  if (diff === 0 && rest.length === 0) {
+    return ops;
   }
+
+
 
   const [nextNum, ...nextRest] = rest;
 
@@ -58,15 +62,12 @@ function* generateAllOps(seq: number[]) {
   }
 }
 
+
+
 function solve(nums: number[], ops: Op[]) {
   let [current, ...rest] = nums;
   for (let i = 0; i < rest.length; i++) {
     const currentOp = ops[i];
-
-    const fn = opsMap[currentOp];
-    if (!fn) {
-      debugger
-    }
 
     current = opsMap[currentOp](current, rest[i])
   }
@@ -77,12 +78,13 @@ function solve(nums: number[], ops: Op[]) {
 function bruteForce(target: number, vals: number[]) {
   for (const ops of generateAllOps(vals)) {
     const result = solve(vals, ops);
+
     if (result === target) {
-      return true;
+      return ops;
     }
   }
 
-  return false;
+  return null;
 }
 
 function checkSeq(target: number, vals: number[]) {
@@ -94,7 +96,7 @@ function checkSeq(target: number, vals: number[]) {
 
 function solvePt1(input: string) {
   return parseInput(input).map(([target, seq]) => {
-    return [target, bruteForce(target, seq)] as const
+    return [target, checkSeq(target, seq)] as const
   }).filter(([, isOk]) => isOk).reduce((acc, [target]) => {
     return acc + target
   }, 0);
@@ -106,9 +108,6 @@ function parseInput(input: string) {
     const [target, seq] = str.split(':');
     return [Number(target), seq.trim().split(' ').map(x => {
       const result = Number.parseInt(x);
-      if (result == 0) {
-        debugger
-      }
 
       if (Number.isNaN(result)) {
         throw new Error('is nan!')
@@ -128,19 +127,14 @@ const testCases: [number, number[], boolean][] = [
   [192, [17, 8, 14], false],
   [21037, [9, 7, 18, 13], false],
   [292, [11, 6, 16, 20], true],
+  [6148, [6, 95, 376, 8, 9, 58, 6, 16, 6, 1], true]
 ];
 
 
 Deno.test('should pass all cases', () => {
   for (const [t, seq, result] of testCases) {
     const res = checkSeq(t, seq);
-    const bf = bruteForce(t, seq);
-
-
     expect(res, `seq ${seq.join(',')} is ${result ? 'correct' : 'incorrect'}`).toBe(result);
-
-    expect(bf, `brute force is different for seq ${seq.join(',')}`).toBe(res);
-
   }
 });
 const sample = `
@@ -162,10 +156,8 @@ Deno.test('shoould solve sample', () => {
 Deno.test('should solve pt1', async () => {
   const content = await Deno.readTextFile('./day7/input.txt');
   const result = solvePt1(content);
+  expect(result).toBe(3312271365652);
 
-  expect(result).toBeGreaterThan(3312209544174);
-
-  console.log(result);
 });
 
 Deno.test('check brute force', async () => {
@@ -176,7 +168,7 @@ Deno.test('check brute force', async () => {
 
     const bf = bruteForce(target, seq);
 
-    expect(isOk, `seq does not match ${seq.join(',')}`).toBe(bf);
+    expect(isOk, `seq does not match ${seq.join(',')}, solution is ${bf?.join(',')}`).toBe(!!bf);
   }
 
 })
